@@ -4,7 +4,7 @@ exports.contactUsEmail = (
     lastname,
     message,
     phoneNo,
-    // countrycode
+    countrycode
   ) => {
     return `<!DOCTYPE html>
     <html>
