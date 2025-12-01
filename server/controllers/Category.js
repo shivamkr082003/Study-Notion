@@ -1,5 +1,5 @@
 const path = require('path');
-const Category = require("./models/categorym");
+const Category = require("../models/categorym");
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max)
