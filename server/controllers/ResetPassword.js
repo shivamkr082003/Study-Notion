@@ -24,7 +24,8 @@ exports.resetPasswordToken = async (req,res)=>{
                                             resetPasswordExpires: Date.now()+3600000,
                                         },
                                         {new:true});
-        const url = `https://studynotion-usara-amit.vercel.app/update-password/${token}`;
+      const url = `http://localhost:3000/update-password/${token}`;
+
         await mailSender(
 			email,
 			"Password Reset",
