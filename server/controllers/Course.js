@@ -548,3 +548,51 @@ exports.deleteCourse = async (req, res) => {
     })
   }
 }
+
+exports.updateCourseStatus = async (req, res) => {
+  try {
+    const { courseId, status } = req.body
+
+    if (!courseId || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "courseId and status required",
+      })
+    }
+
+    // 1️⃣ Course nikaalo
+    const course = await Course.findById(courseId)
+
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      })
+    }
+
+    // 2️⃣ Status update
+    course.status = status
+    await course.save()
+
+    // 3️⃣ 🔥 MAIN FIX: Category me course add karo
+    if (status === "Published") {
+      await Category.findByIdAndUpdate(
+        course.category,
+        { $addToSet: { courses: course._id } } // duplicate se bhi bachaata hai
+      )
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Course published & added to category",
+      data: course,
+    })
+
+  } catch (error) {
+    console.log("UPDATE COURSE STATUS ERROR:", error)
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    })
+  }
+}

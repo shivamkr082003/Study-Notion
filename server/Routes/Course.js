@@ -10,7 +10,7 @@ const {createCourse,
   getFullCourseDetails,
   editCourse,
   getInstructorCourses,
-  deleteCourse,} = require("../controllers/Course");
+  deleteCourse,updateCourseStatus,} = require("../controllers/Course");
 
 const {createCategory,
     showAllCategories,
@@ -54,6 +54,14 @@ router.post("/updateSubSection", auth, isInstructor, updateSubSection)
 router.post("/deleteSubSection", auth, isInstructor, deleteSubSection)
 // Add a Sub Section to a Section
 router.post("/addSubSection", auth, isInstructor, createSubSection)
+
+router.put(
+  "/updateCourseStatus",
+  auth,
+  isInstructor,
+  updateCourseStatus
+)
+
 // Get all Registered Courses
 router.get("/getAllCourses", getAllCourses)
 // Get Details for a Specific Courses

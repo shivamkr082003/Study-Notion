@@ -22,6 +22,7 @@ const {
   GET_FULL_COURSE_DETAILS_AUTHENTICATED,
   CREATE_RATING_API,
   LECTURE_COMPLETION_API,
+  UPDATE_COURSE_STATUS_API,
 } = courseEndpoints
 
 export const getAllCourses = async () => {
@@ -71,7 +72,7 @@ export const fetchCourseCategories = async () => {
   try {
     const response = await apiConnector("GET", COURSE_CATEGORIES_API)
    // console.log("COURSE_CATEGORIES_API API RESPONSE............", response)
-    if (!response?.data?.susccess) {
+    if (!response?.data?.success) {
       throw new Error("Could Not Fetch Course Categories")
     }
     result = response?.data?.data
@@ -388,4 +389,29 @@ export const createRating = async (data, token) => {
   }
   toast.dismiss(toastId)
   return success
+}
+
+export const updateCourseStatus = async (data, token) => {
+  const toastId = toast.loading("Publishing course...")
+  try {
+    const response = await apiConnector(
+      "PUT",
+      UPDATE_COURSE_STATUS_API,
+      data,
+      {
+        Authorization: `Bearer ${token}`,
+      }
+    )
+
+    if (!response?.data?.success) {
+      throw new Error("Failed to publish course")
+    }
+
+    toast.success("Course Published Successfully")
+    return response.data.data
+  } catch (error) {
+    toast.error(error.message)
+  } finally {
+    toast.dismiss(toastId)
+  }
 }

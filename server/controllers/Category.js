@@ -1,6 +1,9 @@
 const path = require('path');
 const Category = require("../models/categorym");
 
+const Course = require("../models/Course");
+// const Category = require("../models/categorym");
+
 function getRandomInt(max) {
   return Math.floor(Math.random() * max)
 }
@@ -12,7 +15,7 @@ exports.createCategory = async (req, res) => {
     // validation 
     if (!name || !description) {
       return res.status(400).json({
-        success: true,
+        success: false,
         message: "All fields are required.",
       })
     }
@@ -43,7 +46,7 @@ exports.showAllCategories = async (req, res) => {
   try {
     const allCategorys = await Category.find({}, { name: true, description: true }); // no any sfacific property are define for find but make you will get data must be included name and description.
     return res.status(200).json({
-      susccess: true,
+      success: true,
       message: "All Category returned successfully.",
       data: allCategorys,
     });
@@ -63,6 +66,7 @@ exports.showAllCategories = async (req, res) => {
 // Utility function to get a random integer
 // const getRandomInt = (max) => Math.floor(Math.random() * max);
 
+
 exports.categoryPageDetails = async (req, res) => {
   try {
     const { categoryId } = req.body;
@@ -74,20 +78,8 @@ exports.categoryPageDetails = async (req, res) => {
       });
     }
 
-    // Get selected category with its published courses
-    const selectedCategory = await Category.findById(categoryId)
-      .populate({
-        path: "courses",
-        match: { status: "Published" },
-        populate: [
-          {
-            path: "instructor",
-            populate: { path: "additionalDetails" },
-          },
-          { path: "ratingAndReviews" },
-        ],
-      })
-      .lean();
+    // ✅ Category details (sirf info ke liye)
+    const selectedCategory = await Category.findById(categoryId).lean();
 
     if (!selectedCategory) {
       return res.status(404).json({
@@ -96,41 +88,49 @@ exports.categoryPageDetails = async (req, res) => {
       });
     }
 
-    // Get all categories except the selected one
-    const differentCategory = await Category.find({ _id: { $ne: categoryId } })
+    // ✅ MAIN FIX: categoryId ke basis pe PUBLISHED courses lao
+    const publishedCourses = await Course.find({
+      category: categoryId,
+      status: "Published",
+    })
       .populate({
-        path: "courses",
-        match: { status: "Published" },
-        populate: [
-          {
-            path: "instructor",
-            populate: { path: "additionalDetails" },
-          },
-          { path: "ratingAndReviews" },
-        ],
+        path: "instructor",
+        populate: { path: "additionalDetails" },
       })
+      .populate("ratingAndReviews")
       .lean();
 
-    // Extract all courses from other categories
-    const differentCourses = differentCategory.flatMap((cat) => cat.courses || []);
+    // ✅ Other categories ke courses
+    const differentCourses = await Course.find({
+      category: { $ne: categoryId },
+      status: "Published",
+    })
+      .populate({
+        path: "instructor",
+        populate: { path: "additionalDetails" },
+      })
+      .populate("ratingAndReviews")
+      .lean();
 
-    // Get most selling courses from all published ones
-    const allCourses = [ ...(selectedCategory.courses || []), ...differentCourses ];
-    const mostSellingCourses = allCourses
-      .sort((a, b) => (b.sold || 0) - (a.sold || 0))
+    // ✅ Most selling courses (safe logic)
+    const mostSellingCourses = [...publishedCourses, ...differentCourses]
+      .sort(
+        (a, b) =>
+          (b.studentsEnrolled?.length || 0) -
+          (a.studentsEnrolled?.length || 0)
+      )
       .slice(0, 10);
 
     return res.status(200).json({
       success: true,
       data: {
         selectedCategory,
+        courses: publishedCourses,   // ⭐ FRONTEND YAHI USE KAREGA
         differentCourses,
         mostSellingCourses,
       },
     });
-
   } catch (error) {
-   // console.error("Error in categoryPageDetails:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -138,6 +138,7 @@ exports.categoryPageDetails = async (req, res) => {
     });
   }
 };
+
 
 // exports.categoryPageDetails = async (req, res) => {
 // 	try {
