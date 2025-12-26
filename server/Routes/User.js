@@ -9,7 +9,7 @@ const router = express.Router();
    
     const {resetPassword,
         resetPasswordToken 
-    } = require("../controllers/ReSetPassword");
+    } = require("../controllers/ResetPassword");
 
     const { auth,
         isInstructor,
