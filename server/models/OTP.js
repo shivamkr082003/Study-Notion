@@ -9,7 +9,7 @@ const OTPSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    Default: Date.now(),
+    default: Date.now(),
     expires: 5 * 60 * 1000,
   },
   otp: {
@@ -31,14 +31,18 @@ async function sendVerificationEmail(email, otp) {
     console.log("otp:-",otp);
     console.log("email:-",email);
 
-    throw error;
+    // throw error;
   }
 }
 
 OTPSchema.pre("save", async function (next) {
-  if(this.isNew){
-    await sendVerificationEmail(this.email, this.otp);
-    
+  if (this.isNew) {
+    try {
+      await sendVerificationEmail(this.email, this.otp);
+    } catch (error) {
+      console.error("Email Hook Error:", error);
+      // throw error ko hata do testing ke liye
+    }
   }
   next();
 });
