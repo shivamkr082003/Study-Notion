@@ -19,7 +19,7 @@ const profileSchema = new mongoose.Schema({
     },
     contectNumber:{
         type:String,
-        trim:true,
+       trim:true, 
     },
     
 });

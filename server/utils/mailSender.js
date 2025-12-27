@@ -1,12 +1,11 @@
 const nodemailer = require("nodemailer");
-require("dotenv").config();
 
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",   // 🔥 FIXED
-      port: 465,                // 🔥 REQUIRED
-      secure: true,            // 🔥 REQUIRED for 465
+      host: process.env.MAIL_HOST,
+      port: process.env.MAIL_PORT,
+      secure: false, // must be false for 587
       auth: {
         user: process.env.MAIL_USER,
         pass: process.env.MAIL_PASS,
@@ -20,10 +19,10 @@ const mailSender = async (email, title, body) => {
       html: body,
     });
 
-    console.log("Email sent successfully:", info.response);
+    console.log("✅ Email sent:", info.messageId);
     return info;
   } catch (error) {
-    console.log("MAIL ERROR:", error.message);
+    console.log("❌ MAIL ERROR:", error.message);
     throw error;
   }
 };
