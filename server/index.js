@@ -27,7 +27,7 @@ app.use(cookieParser());
 // Updated CORS configuration
 app.use(
   cors({
-    origin: ["https://study-notion-2ivz.vercel.app", "http://localhost:3000"],// Ye har kisi ko allow kar dega (Testing ke liye best hai)
+    origin: ["https://study-notion-7-ier7.onrender.com", "http://localhost:3000"],// Ye har kisi ko allow kar dega (Testing ke liye best hai)
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
