@@ -26,7 +26,8 @@ app.use(cookieParser());
 
 // Updated CORS configuration
 app.use(cors({
-    origin: "*", 
+     origin: ["https://study-notion-2ivz.vercel.app", "http://localhost:3000"],
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
