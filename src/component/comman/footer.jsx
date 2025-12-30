@@ -117,7 +117,7 @@ const footer = () => {
                     }
                 </div>
                 <div className='text-[#838894] font-medium'>
-                Made with ❤️ CodeHelp © 2023 Studynotion
+                Made with ❤️ Shivam © 2023 Studynotion
                 </div>
             </div>
         </div>
